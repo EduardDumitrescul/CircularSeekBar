@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:circular="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:fitsSystemWindows="true">
+    <com.example.circularseekbar.CircularSeekBar
+        android:layout_gravity="center"
+        android:padding="8dp"
+        android:background="#999999"
+        android:layout_height="320dp"
+        android:layout_width="320dp"
+        circular:trackThickness="15dp"
+        circular:trackColor="@color/black"
+        circular:thumbThickness="24dp"
+        circular:thumbColor="#990099"/>
+
+
+
+</FrameLayout>

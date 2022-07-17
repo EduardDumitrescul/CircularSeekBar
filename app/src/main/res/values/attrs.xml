@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CircularSeekBar">
+        <attr name="trackThickness" format="dimension"/>
+        <attr name="trackColor" format="color"/>
+        <attr name="thumbThickness" format="dimension"/>
+        <attr name="thumbColor" format="color"/>
+        <attr name="startAngle" format="float"/>
+        <attr name="trackColorActive" format="color"/>
+    </declare-styleable>
+</resources>
