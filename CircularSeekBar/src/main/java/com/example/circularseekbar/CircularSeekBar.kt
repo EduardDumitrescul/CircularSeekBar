@@ -270,9 +270,7 @@ class CircularSeekBar(context: Context, attrs: AttributeSet): View(context, attr
     }
 
     interface OnChangeListener {
-        fun onValueChangeDetected(value: Int) {
-            Log.d(TAG, value.toString())
-        }
+        fun onValueChangeDetected(value: Int)
     }
 
 }
