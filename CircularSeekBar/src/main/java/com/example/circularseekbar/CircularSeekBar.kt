@@ -12,6 +12,7 @@ import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.LinearInterpolator
+import android.widget.NumberPicker
 import androidx.interpolator.view.animation.FastOutLinearInInterpolator
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import kotlin.math.*
@@ -51,8 +52,8 @@ class CircularSeekBar(context: Context, attrs: AttributeSet): View(context, attr
                 return@addUpdateListener
             }
             mValue = it.animatedValue as Float
-            Log.d(TAG, "initAnimator() $mValue")
-            Log.d(TAG, "$mValue")
+            updateListeners(mValue)
+
             invalidate()
         }
         interpolator = LinearInterpolator()
@@ -156,12 +157,21 @@ class CircularSeekBar(context: Context, attrs: AttributeSet): View(context, attr
         if(newValue == mTargetValue)
             return
         mTargetValue = newValue
-
         initAnimation(mTargetValue)
     }
 
     private fun distance(p1: Pair<Float, Float>, p2: Pair<Float, Float>): Float {
         return sqrt((p1.first - p2.first) * (p1.first - p2.first) + (p1.second - p2.second) * (p1.second - p2.second))
+    }
+
+    private fun getFixedValue(value: Float): Int {
+        val index: Int = (value / mStepSize).toInt()
+        if(value - index * mStepSize < (index + 1) * mStepSize - value) {
+            return index * mStepSize
+        }
+        else {
+            return (index + 1) * mStepSize
+        }
     }
 
     private fun getThumbPositionFromValue(value: Float) = getThumbPositionFromAngle(getAngleFromValue(value))
@@ -235,8 +245,21 @@ class CircularSeekBar(context: Context, attrs: AttributeSet): View(context, attr
 
     }
 
+    private var lastListenerValue: Int = -1
+    private fun updateListeners(value: Float) {
+        val intValue = getFixedValue(value)
+        if(lastListenerValue == intValue)
+            return
+        lastListenerValue = intValue
+        Log.d(TAG, "updateListeners() $intValue")
+        mOnChangeListener?.onValueChangeDetected(intValue)
+
+    }
+
     interface OnChangeListener {
-        fun onValueChangeDetected(value: Int)
+        fun onValueChangeDetected(value: Int) {
+            Log.d(TAG, value.toString())
+        }
     }
 
 }
