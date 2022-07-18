@@ -45,6 +45,13 @@ class CircularSeekBar(context: Context, attrs: AttributeSet): View(context, attr
     private var mBaseValue: Int = 0
     private var mStepSize: Int = 3
 
+
+    private var isThumbVisible: Boolean = true
+        set(value: Boolean) {
+            field = value
+            invalidate()
+        }
+
     private var valueAnimator: ValueAnimator = ValueAnimator.ofFloat().apply {
         duration = 180
         addUpdateListener {
@@ -100,16 +107,19 @@ class CircularSeekBar(context: Context, attrs: AttributeSet): View(context, attr
             style = Paint.Style.STROKE
             color = mTrackColor
             strokeWidth = mTrackThickness
+            isAntiAlias = true
         }
         mTrackActivePaint = Paint().apply {
             style = Paint.Style.STROKE
             color = mTrackColorActive
             strokeWidth = mTrackThickness * 0.7f
             strokeCap = Paint.Cap.ROUND
+            isAntiAlias = true
         }
         mThumbPaint = Paint().apply {
             style = Paint.Style.FILL_AND_STROKE
             color = mThumbColor
+            isAntiAlias = true
         }
     }
 
@@ -137,8 +147,11 @@ class CircularSeekBar(context: Context, attrs: AttributeSet): View(context, attr
         var angle: Float = getAngleFromValue(mValue)
         canvas.drawArc(mCenterX - mRadius, mCenterY - mRadius, mCenterX + mRadius, mCenterY + mRadius, mStartAngle - 90, angle, false, mTrackActivePaint)
 
-        val thumbPosition = getThumbPositionFromAngle(mStartAngle + angle)
-        canvas.drawCircle(thumbPosition.first, thumbPosition.second, mThumbThickness, mThumbPaint)
+        if(isThumbVisible) {
+            val thumbPosition = getThumbPositionFromAngle(mStartAngle + angle)
+            canvas.drawCircle(thumbPosition.first, thumbPosition.second, mThumbThickness, mThumbPaint)
+        }
+
 
     }
 
