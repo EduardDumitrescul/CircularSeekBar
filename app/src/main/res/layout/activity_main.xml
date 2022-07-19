@@ -15,7 +15,8 @@
         circular:trackThickness="15dp"
         circular:trackColor="@color/black"
         circular:thumbThickness="24dp"
-        circular:thumbColor="#990099"/>
+        circular:thumbColor="#990099"
+        circular:thumbVisibility="false"/>
 
 
 

@@ -20,16 +20,21 @@ import kotlin.math.*
 
 private const val TAG = "CircularSeekBar"
 
+
 class CircularSeekBar(context: Context, attrs: AttributeSet): View(context, attrs) {
+
+    companion object {
+        const val MODE_LOCKED: Int = 0
+        const val MODE_UNLOCKED: Int = 1
+    }
 
     private var mTrackThickness: Float = 0f // dp
     private var mTrackColor: Int = Color.RED
+    private var mTrackColorActive: Int = Color.CYAN
     private var mCenterX: Float= 0F
     private var mCenterY: Float = 0F
     private var mRadius: Float = 0F
     private var mPadding: Int = 20
-
-    private var mTrackColorActive: Int = Color.CYAN
 
     private var mThumbThickness: Float = 0f
     private var mThumbColor: Int = Color.GREEN
@@ -40,17 +45,88 @@ class CircularSeekBar(context: Context, attrs: AttributeSet): View(context, attr
     private var mOnChangeListener: OnChangeListener? = null
 
     private var mValue: Float = 0f
+
     private var mTargetValue: Float = 0f
     private var mMaxValue: Int = 100
-    private var mBaseValue: Int = 0
     private var mStepSize: Int = 3
 
-
     private var isThumbVisible: Boolean = true
-        set(value: Boolean) {
-            field = value
-            invalidate()
+    private var isLocked: Boolean = false
+
+    fun getTrackThickness() = mTrackThickness
+    fun setTrackThickness(thickness: Float) {
+        mTrackThickness = thickness
+        invalidate()
+    }
+
+    fun getTrackColor() = mTrackColor
+    fun setTrackColor(color: Int) {
+        mTrackColor = color
+        invalidate()
+    }
+
+    fun getTrackColorActive() = mTrackColorActive
+    fun setTrackColorActive(color: Int) {
+        mTrackColorActive = color
+        invalidate()
+    }
+
+    fun getThumbThickness() = mThumbThickness
+    fun setThumbThickness(thickness: Float) {
+        mThumbThickness = thickness
+        invalidate()
+    }
+
+    fun getThumbColor() = mThumbColor
+    fun setThumbColor(color: Int) {
+        mThumbColor = color
+        invalidate()
+    }
+
+    fun getStartAngle() = mStartAngle
+    fun setStartAngle(angle: Float) {
+        mStartAngle = angle
+        invalidate()
+    }
+
+    fun getMaxValue() = mMaxValue
+    fun setMaxValue(value: Int) {
+        mMaxValue = value
+    }
+
+    fun getStepSize() = mStepSize
+    fun setStepSize(value: Int) {
+        mStepSize = value
+    }
+
+    fun getValue() = getFixedValue(mValue)
+    fun setValue(value: Number) {
+        mValue = value.toFloat()
+    }
+
+    fun getIsThumbVisible() = isThumbVisible
+    fun setIsThumbVisible(value: Boolean) {
+        isThumbVisible = value
+        invalidate()
+    }
+
+    fun getIsLocked() = isLocked
+    fun setIsLocked(mode: Int) {
+        if(mode == MODE_LOCKED) {
+            isLocked = true
+            return
         }
+        if(mode == MODE_UNLOCKED) {
+            isLocked = false
+            return
+        }
+        Log.d(TAG, "setMode() - unrecognized mode")
+    }
+
+    fun setOnChangeListener(listener: OnChangeListener?) {
+        mOnChangeListener = listener
+    }
+
 
     private var valueAnimator: ValueAnimator = ValueAnimator.ofFloat().apply {
         duration = 180
@@ -74,17 +150,26 @@ class CircularSeekBar(context: Context, attrs: AttributeSet): View(context, attr
 
             Log.d(TAG, "init")
             val trackThickness = getDimension(R.styleable.CircularSeekBar_trackThickness, 8f)
-            mTrackThickness = trackThickness
+            setTrackThickness(trackThickness)
             val trackColor = getColor(R.styleable.CircularSeekBar_trackColor, Color.BLUE)
-            mTrackColor = trackColor
-            val thumbThickness = getDimension(R.styleable.CircularSeekBar_thumbThickness, 16f)
-            mThumbThickness = thumbThickness
-            val thumbColor = getColor(R.styleable.CircularSeekBar_thumbColor, Color.GREEN)
-            mThumbColor = thumbColor
-            val startAngle = getFloat(R.styleable.CircularSeekBar_startAngle, 0f)
-            mStartAngle = startAngle
+            setTrackColor(trackColor)
             val trackColorActive = getColor(R.styleable.CircularSeekBar_trackColorActive, Color.CYAN)
-            mTrackColorActive = trackColorActive
+            setTrackColorActive(trackColorActive)
+
+            val thumbThickness = getDimension(R.styleable.CircularSeekBar_thumbThickness, 16f)
+            setThumbThickness(thumbThickness)
+            val thumbColor = getColor(R.styleable.CircularSeekBar_thumbColor, Color.GREEN)
+            setThumbColor(thumbColor)
+
+            val startAngle = getFloat(R.styleable.CircularSeekBar_startAngle, 0f)
+            setStartAngle(startAngle)
+
+            val thumbVisible = getBoolean(R.styleable.CircularSeekBar_thumbVisibility, true)
+            setIsThumbVisible(thumbVisible)
+            val stepSize = getInt(R.styleable.CircularSeekBar_stepSize, 5)
+            setStepSize(stepSize)
+            val maxValue = getInt(R.styleable.CircularSeekBar_maxValue, 100)
+            setMaxValue(maxValue)
 
 
 
@@ -124,10 +209,6 @@ class CircularSeekBar(context: Context, attrs: AttributeSet): View(context, attr
     }
 
 
-    fun setOnChangeListener(listener: OnChangeListener?) {
-        mOnChangeListener = listener
-    }
-
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         val smallerDim: Float = min(w, h).toFloat()
         mCenterX = (w / 2).toFloat()
@@ -145,6 +226,8 @@ class CircularSeekBar(context: Context, attrs: AttributeSet): View(context, attr
         }
 
         var angle: Float = getAngleFromValue(mValue)
+        if(angle == 0f) angle = 0.1f
+        if(angle == 360f) angle = 355f
         canvas.drawArc(mCenterX - mRadius, mCenterY - mRadius, mCenterX + mRadius, mCenterY + mRadius, mStartAngle - 90, angle, false, mTrackActivePaint)
 
         if(isThumbVisible) {
@@ -234,6 +317,9 @@ class CircularSeekBar(context: Context, attrs: AttributeSet): View(context, attr
 
     private var mThumbSelected: Boolean = false
     override fun onTouchEvent(event: MotionEvent?): Boolean {
+        if(isLocked) {
+            return true
+        }
         when(event?.action) {
             MotionEvent.ACTION_DOWN -> {
 

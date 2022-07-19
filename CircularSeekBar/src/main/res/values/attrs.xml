@@ -7,5 +7,8 @@
         <attr name="thumbColor" format="color"/>
         <attr name="startAngle" format="float"/>
         <attr name="trackColorActive" format="color"/>
+        <attr name="maxValue" format="integer"/>
+        <attr name="stepSize" format="integer"/>
+        <attr name="thumbVisibility" format="boolean"/>
     </declare-styleable>
 </resources>
