@@ -230,7 +230,7 @@ class CircularSeekBar(context: Context, attrs: AttributeSet): View(context, attr
 
         var angle: Float = getAngleFromValue(mValue)
         if(angle == 0f) angle = 0.1f
-        if(angle == 360f) angle = 355f
+        if(angle >= 355f) angle = 355f
         canvas.drawArc(mCenterX - mRadius, mCenterY - mRadius, mCenterX + mRadius, mCenterY + mRadius, mStartAngle - 90, angle, false, mTrackActivePaint)
 
         if(isThumbVisible) {
