@@ -92,11 +92,13 @@ class CircularSeekBar(context: Context, attrs: AttributeSet): View(context, attr
     fun getMaxValue() = mMaxValue
     fun setMaxValue(value: Int) {
         mMaxValue = value
+        invalidate()
     }
 
     fun getStepSize() = mStepSize
     fun setStepSize(value: Int) {
         mStepSize = value
+        invalidate()
     }
 
     fun getValue() = getFixedValue(mValue)
