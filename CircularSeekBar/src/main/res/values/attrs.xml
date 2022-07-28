@@ -6,6 +6,7 @@
         <attr name="thumbThickness" format="dimension"/>
         <attr name="thumbColor" format="color"/>
         <attr name="startAngle" format="float"/>
+        <attr name="trackThicknessActive" format="dimension"/>
         <attr name="trackColorActive" format="color"/>
         <attr name="maxValue" format="integer"/>
         <attr name="stepSize" format="integer"/>

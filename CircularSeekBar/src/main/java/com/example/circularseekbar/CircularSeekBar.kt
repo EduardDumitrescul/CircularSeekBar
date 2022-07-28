@@ -30,6 +30,7 @@ class CircularSeekBar(context: Context, attrs: AttributeSet): View(context, attr
 
     private var mTrackThickness: Float = 0f // dp
     private var mTrackColor: Int = Color.RED
+    private var mTrackThicknessActive = 0f // dp
     private var mTrackColorActive: Int = Color.CYAN
     private var mCenterX: Float= 0F
     private var mCenterY: Float = 0F
@@ -56,18 +57,28 @@ class CircularSeekBar(context: Context, attrs: AttributeSet): View(context, attr
     fun getTrackThickness() = mTrackThickness
     fun setTrackThickness(thickness: Float) {
         mTrackThickness = thickness
+        initPaints()
         invalidate()
     }
 
     fun getTrackColor() = mTrackColor
     fun setTrackColor(color: Int) {
         mTrackColor = color
+        initPaints()
+        invalidate()
+    }
+
+    fun getTrackThicknessActive() = mTrackThicknessActive
+    fun setTrackThicknessActive(thickness: Float) {
+        mTrackThicknessActive = thickness
+        initPaints()
         invalidate()
     }
 
     fun getTrackColorActive() = mTrackColorActive
     fun setTrackColorActive(color: Int) {
         mTrackColorActive = color
+        initPaints()
         invalidate()
     }
 
@@ -80,6 +91,7 @@ class CircularSeekBar(context: Context, attrs: AttributeSet): View(context, attr
     fun getThumbColor() = mThumbColor
     fun setThumbColor(color: Int) {
         mThumbColor = color
+        initPaints()
         invalidate()
     }
 
@@ -156,6 +168,8 @@ class CircularSeekBar(context: Context, attrs: AttributeSet): View(context, attr
             setTrackThickness(trackThickness)
             val trackColor = getColor(R.styleable.CircularSeekBar_trackColor, Color.BLUE)
             setTrackColor(trackColor)
+            val trackThicknessActive = getDimension(R.styleable.CircularSeekBar_trackThicknessActive, 4f)
+            setTrackThicknessActive(trackThicknessActive)
             val trackColorActive = getColor(R.styleable.CircularSeekBar_trackColorActive, Color.CYAN)
             setTrackColorActive(trackColorActive)
 
@@ -200,7 +214,7 @@ class CircularSeekBar(context: Context, attrs: AttributeSet): View(context, attr
         mTrackActivePaint = Paint().apply {
             style = Paint.Style.STROKE
             color = mTrackColorActive
-            strokeWidth = mTrackThickness * 0.7f
+            strokeWidth = mTrackThicknessActive
             strokeCap = Paint.Cap.ROUND
             isAntiAlias = true
         }
