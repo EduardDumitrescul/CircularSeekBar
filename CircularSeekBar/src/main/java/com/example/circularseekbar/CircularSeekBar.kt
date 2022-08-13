@@ -116,6 +116,7 @@ class CircularSeekBar(context: Context, attrs: AttributeSet): View(context, attr
     fun getValue() = getFixedValue(mValue)
     fun setValue(value: Number) {
         mValue = value.toFloat()
+        mOnChangeListener?.onValueChangeDetected(value.toInt())
         invalidate()
     }
 
